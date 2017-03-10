@@ -1,0 +1,3 @@
+<!ELEMENT matrix (#PCDATA)>
+<!ELEMENT attribute (matrix, attribute*)>
+    <!ATTLIST attribute name CDATA #REQUIRED >

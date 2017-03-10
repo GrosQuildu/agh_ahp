@@ -1,0 +1,45 @@
+<attribute name="Goal">
+    <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+    <attribute name="Mechanics">
+        <matrix>[[1, 4, 4, 1], [0.25, 1, 1, 0.25], [0.25, 1, 1, 0.25], [1, 4, 4, 1]]</matrix>
+        <attribute name="Brakes">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+        <attribute name="Quality of the shift">
+            <matrix>[[1, 2, 0.4], [0.5, 1, 0.2], [2.5, 5, 1]]</matrix>
+        </attribute>
+        <attribute name="Horse power">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+        <attribute name="Wheels">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+    </attribute>
+
+    <attribute name="Aesthetic">
+        <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        <attribute name="Wheels">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+        <attribute name="Color">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+        <attribute name="Shape">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+    </attribute>
+
+    <attribute name="Comfort">
+        <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        <attribute name="Air conditioning">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+        <attribute name="Seats">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+        <attribute name="Other optionals">
+            <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
+        </attribute>
+    </attribute>
+
+</attribute>
