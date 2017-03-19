@@ -104,33 +104,40 @@ public class AhpNode {
     }
 
     /* Compute priority/weight vectors */
-    Matrix getWeightsVector(Matrix matrix, PriorityVectorMethod method) {
+    Matrix getWeightsVector(Matrix matrix) {
         Matrix weights = method.getPriorityVector(this);
         if(this.list.size() == 0)
             return weights;
 
-        Matrix finallWeights = this.list.get(0).getWeightsVector(matrix, method).times(weights.get(0, 0));
+        Matrix finallWeights = this.list.get(0).getWeightsVector(matrix).times(weights.get(0, 0));
         for(int i = 1; i < this.list.size(); i++) {
-            Matrix tmp = this.list.get(i).getWeightsVector(matrix, method).times(weights.get(i, 0));
+            Matrix tmp = this.list.get(i).getWeightsVector(matrix).times(weights.get(i, 0));
             finallWeights.plusEquals(tmp);  // W += w'_i * w_j
         }
         return finallWeights;
     }
-    Matrix getWeightsVector() {
-        return getWeightsVector(this.matrix, new EigenvectorMethod());
-    }
+    Matrix getWeightsVector() {return getWeightsVector(this.matrix);}
 
     /* Consistency indexes */
-    double consistencyIndex() {
-        return consistencyIndex(this.matrix, this.maxEigenvalue);
-    }
-    double consistencyRatio() {
-        return consistencyRatio(this.matrix, this.maxEigenvalue);
-    }
+    double consistencyIndex() {return consistencyIndex(this.matrix, this.maxEigenvalue);}
+    double consistencyRatio() {return consistencyRatio(this.matrix, this.maxEigenvalue);}
+    double consistencyIndexOfDeterminants() {return consistencyIndexOfDeterminants(this.matrix);}
+    double consistencyGeometricIndex() {return consistencyGeometricIndex(this.matrix, method.getPriorityVector(this));}
+    double consistencyHarmonicIndex() {return consistencyHarmonicIndex(this.matrix);}
+    double consistencyAmbiguityIndex() {return consistencyAmbiguityIndex(this.matrix);}
 
     /* convert to printable */
     private String toString(String before) {
         String result = before + this.name + "\n";
+        result += before + "consistency: ";
+        result += String.format("Index: %.4f | ", consistencyIndex());
+        result += String.format("Ratio: %.4f | ", consistencyRatio());
+        result += String.format("IndexOfDeterminants: %.4f | ", consistencyIndexOfDeterminants());
+        result += String.format("GeometricIndex: %.4f | ", consistencyGeometricIndex());
+        result += String.format("HarmonicIndex: %.4f | ", consistencyHarmonicIndex());
+        result += String.format("AmbiguityIndex: %.4f | ", consistencyAmbiguityIndex());
+        result += "\n";
+
         for(int i = 0; i<this.matrix.getRowDimension(); i++) {
             result += before;
             for (int j = 0; j < this.matrix.getColumnDimension(); j++)
@@ -200,10 +207,67 @@ public class AhpNode {
 
     static double consistencyIndex(Matrix matrix, double maxEigenvalue) {
         int n = matrix.getRowDimension();
-//        System.out.println(maxEigenvalue);
         return (maxEigenvalue - n) / (n - 1);
     }
 
+    public static int factorial(int n) {
+        int fact = 1; // this  will be the result
+        for (int i = 1; i <= n; i++) {
+            fact *= i;
+        }
+        return fact;
+    }
+
+    static double consistencyIndexOfDeterminants(Matrix matrix) {
+        int n = matrix.getRowDimension();
+        double result = 0;
+        int denom = n*(n-1)*(n-2)/6;
+
+        for(int i=0; i<n-2; i++)
+            for(int j=i+1; j<n-1; j++)
+                for(int k=j+1; k<n; k++)
+                    result += ((matrix.get(i,k)/(matrix.get(i,j)*matrix.get(j,k)))
+                            + ((matrix.get(i,j)*matrix.get(j,k))/matrix.get(i,k))
+                            - 2) / denom;
+        return result;
+    }
+
+    static double consistencyGeometricIndex(Matrix matrix, Matrix weights) {
+        int n = matrix.getRowDimension();
+        double result = 0;
+        for(int i=0; i<n-1; i++)
+            for(int j=i+1; j<n; j++)
+                result += Math.pow(Math.log(matrix.get(i,j) * (weights.get(j,0)/weights.get(i,0))), 2);
+        return (2./((n-1)*(n-2))) * result;
+    }
+
+    static double consistencyHarmonicIndex(Matrix matrix) {
+        int n = matrix.getRowDimension();
+        double sum;
+
+        ArrayList<Double> s = new ArrayList<Double>();
+        for(int j=0; j<n; j++) {
+            sum = 0;
+            for (int i = 0; i < n; i++)
+                sum += matrix.get(i,j);
+            s.add(sum);
+        }
+
+        sum = 0;
+        for(int j=0; j<n; j++)
+            sum += 1./s.get(j);
+        double hm = n/sum;
+
+        return ((hm - n)*(n+1)) / (n*(n-1));
+    }
+
+    static double consistencyAmbiguityIndex(Matrix matrix) {
+        int n = matrix.getRowDimension();
+        return 2;
+    }
+
+
+    /* Eigenvalues */
     static int getMaxEigenvalueIndex(Matrix matrix) {
         double[] eigenvalues = matrix.eig().getRealEigenvalues();
         int maxEigenvalueIndex = 0;

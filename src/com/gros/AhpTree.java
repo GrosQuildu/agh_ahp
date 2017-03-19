@@ -27,7 +27,7 @@ public class AhpTree {
         this.alternatives = alternatives;
     }
 
-    static AhpTree fromXml(String path) throws Exception {
+    static AhpTree fromXml(String path, String method) throws Exception {
         File inputFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -51,10 +51,10 @@ public class AhpTree {
             }
             childNode = childNode.getNextSibling();
         }
-        return new AhpTree(parseXml(goalElement), alternativesList);
+        return new AhpTree(parseXml(goalElement, method), alternativesList);
     }
 
-    private static AhpNode parseXml(Element root) throws Exception {
+    private static AhpNode parseXml(Element root, String method) throws Exception {
         AhpNode ahpRoot = null;
         ArrayList<AhpNode> ahpList = new ArrayList<AhpNode>();
         Node childNode = root.getFirstChild();
@@ -63,9 +63,9 @@ public class AhpTree {
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element) childNode;
                 if("matrix".equals(childElement.getNodeName())) {
-                    ahpRoot = new AhpNode.Builder(root.getAttribute("name"), childElement.getTextContent()).build();
+                    ahpRoot = new AhpNode.Builder(root.getAttribute("name"), childElement.getTextContent()).method(method).build();
                 } else if("attribute".equals(childElement.getNodeName())) {
-                    ahpList.add(parseXml(childElement));
+                    ahpList.add(parseXml(childElement, method));
                 }
             }
             childNode = childNode.getNextSibling();

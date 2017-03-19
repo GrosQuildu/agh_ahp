@@ -58,8 +58,16 @@ public class Main {
 
         System.out.print("Path to XML file: ");
         String path = s.next();
-        AhpTree tree = AhpTree.fromXml(path);
+
+        System.out.print("Method (eigenvector/geometric): ");
+        s.nextLine();
+        String method = s.nextLine();
+        if("".equals(method))
+            method = "eigenvector";
+
+        AhpTree tree = AhpTree.fromXml(path, method);
         System.out.println(tree);
+//        tree.printConsistency();
         tree.printResult();
     }
 
