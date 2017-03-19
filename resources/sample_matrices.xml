@@ -1,4 +1,9 @@
 <attribute name="Goal">
+    <alternatives>
+        <alternative>Alt1</alternative>
+        <alternative>Alt2</alternative>
+        <alternative>Alt3</alternative>
+    </alternatives>
     <matrix>[[1, 0.5, 0.25], [2, 1, 0.5], [4, 2, 1]]</matrix>
     <attribute name="Mechanics">
         <matrix>[[1, 4, 4, 1], [0.25, 1, 1, 0.25], [0.25, 1, 1, 0.25], [1, 4, 4, 1]]</matrix>

@@ -1,3 +1,5 @@
 <!ELEMENT matrix (#PCDATA)>
+<!ELEMENT alternatives (alternative)>
+<!ELEMENT alternative (#PCDATA)>
 <!ELEMENT attribute (matrix, attribute*)>
     <!ATTLIST attribute name CDATA #REQUIRED >
