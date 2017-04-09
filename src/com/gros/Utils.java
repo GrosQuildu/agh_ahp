@@ -13,10 +13,10 @@ public class Utils {
             return null;
         Random rand = new Random();
         if(criterionsDeep == 0) {
-            return new AhpNode.Builder("C"+criterionsDeep, randomMatrix(alternatives, inconsistency)).build();
+            return new AhpNode("C"+criterionsDeep, randomMatrix(alternatives, inconsistency));
         } else {
             int criterions = rand.nextInt(maxCriterions)+2;
-            AhpNode root = new AhpNode.Builder("C"+criterionsDeep, randomMatrix(criterions, inconsistency)).build();
+            AhpNode root = new AhpNode("C"+criterionsDeep, randomMatrix(criterions, inconsistency));
             for (int i = 0; i < criterions; i++)
                 root.addChild(randomMatrices(alternatives, criterionsDeep - 1, maxCriterions, inconsistency));
             return root;

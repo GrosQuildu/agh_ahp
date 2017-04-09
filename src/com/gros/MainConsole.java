@@ -1,25 +1,17 @@
 package com.gros;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.io.File;
 import java.util.Scanner;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
 
 import org.json.JSONException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
 
-import static com.gros.Utils.randomMatrices;
 
 /**
  * Created by gros on 10.03.17.
  */
-public class Main {
+public class MainConsole {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
         int choice;
@@ -67,7 +59,6 @@ public class Main {
 
         AhpTree tree = AhpTree.fromXml(path, method);
         System.out.println(tree);
-//        tree.printConsistency();
         tree.printResult();
     }
 
@@ -90,7 +81,7 @@ public class Main {
         ArrayList<String> altList = new ArrayList<String>();
         for(int i=0; i < alternatives; i++)
             altList.add("Alt"+i);
-        AhpTree tree = new AhpTree(goal, altList);
+        AhpTree tree = new AhpTree(goal, altList, "eigenvector");
 
         System.out.print("Path to save: ");
         String path = s.next();

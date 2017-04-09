@@ -21,10 +21,23 @@ import java.util.*;
 public class AhpTree {
     AhpNode goal;
     ArrayList<String> alternatives;
+    public PriorityVectorMethod method;
+
+    AhpTree(AhpNode root, ArrayList<String> alternatives, String method) {
+        this(root, alternatives);
+        setMethod(method);
+    }
 
     AhpTree(AhpNode root, ArrayList<String> alternatives) {
         this.goal = root;
         this.alternatives = alternatives;
+    }
+
+    public void setMethod(String method) {
+        if("eigenvector".equals(method))
+            this.method = new EigenvectorMethod();
+        else
+            this.method = new GeometricMeanMethod();
     }
 
     static AhpTree fromXml(String path, String method) throws Exception {
@@ -51,10 +64,10 @@ public class AhpTree {
             }
             childNode = childNode.getNextSibling();
         }
-        return new AhpTree(parseXml(goalElement, method), alternativesList);
+        return new AhpTree(parseXml(goalElement), alternativesList, method);
     }
 
-    private static AhpNode parseXml(Element root, String method) throws Exception {
+    private static AhpNode parseXml(Element root) throws Exception {
         AhpNode ahpRoot = null;
         ArrayList<AhpNode> ahpList = new ArrayList<AhpNode>();
         Node childNode = root.getFirstChild();
@@ -63,9 +76,9 @@ public class AhpTree {
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element) childNode;
                 if("matrix".equals(childElement.getNodeName())) {
-                    ahpRoot = new AhpNode.Builder(root.getAttribute("name"), childElement.getTextContent()).method(method).build();
+                    ahpRoot = new AhpNode(root.getAttribute("name"), childElement.getTextContent());
                 } else if("attribute".equals(childElement.getNodeName())) {
-                    ahpList.add(parseXml(childElement, method));
+                    ahpList.add(parseXml(childElement));
                 }
             }
             childNode = childNode.getNextSibling();
@@ -77,7 +90,7 @@ public class AhpTree {
         return ahpRoot;
     }
 
-    private static Map<String, Double> sortByValue(Map<String, Double> unsortMap) {
+    public static Map<String, Double> sortByValue(Map<String, Double> unsortMap) {
 
         List<Map.Entry<String, Double>> list =
                 new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());
@@ -97,7 +110,7 @@ public class AhpTree {
     }
 
     public void printResult() throws Exception {
-        Matrix resultWeights = this.goal.getWeightsVector();
+        Matrix resultWeights = this.goal.getWeightsVector(this.method);
         if(resultWeights.getRowDimension() != this.alternatives.size())
             throw new Exception("Number of alternatives not equals weights vector dimension");
 

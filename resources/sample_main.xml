@@ -1,0 +1,17 @@
+<attribute name="goal">
+    <alternatives>
+        <alternative>Barcelona</alternative>
+        <alternative>Reykjavik</alternative>
+        <alternative>Rome</alternative>
+    </alternatives>
+    <matrix>[[1,3,6], [0.3,1,2], [0.16666,0.5,1]]</matrix>
+    <attribute name="Climate">
+        <matrix>[[1,1,4], [1,1,4], [0.25,0.25,1]]</matrix>
+    </attribute>
+    <attribute name="Environment">
+        <matrix>[[1,2,6], [0.5,1,3], [0.16666,0.3333,1]]</matrix>
+    </attribute>
+    <attribute name="Cost">
+        <matrix>[[1,0.5,0.125], [2,1,0.25], [8,4,1]]</matrix>
+    </attribute>
+</attribute>
