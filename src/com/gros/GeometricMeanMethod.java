@@ -25,4 +25,6 @@ public class GeometricMeanMethod implements PriorityVectorMethod{
             weights[i] = powers[i] / normalizationTerm;
         return new Matrix(weights, 1).transpose();
     }
+
+    public String toString() {return "geometric mean";}
 }

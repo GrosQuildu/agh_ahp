@@ -13,4 +13,6 @@ public class EigenvectorMethod implements PriorityVectorMethod {
             sum += x;
         return maxEigenvector.times(1./sum).transpose();
     }
+
+    public String toString() {return "eigenvector";}
 }

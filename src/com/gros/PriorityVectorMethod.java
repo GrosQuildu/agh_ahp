@@ -7,4 +7,5 @@ import Jama.Matrix;
  */
 public interface PriorityVectorMethod {
     Matrix getPriorityVector(AhpNode node);
+    public String toString();
 }

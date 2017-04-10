@@ -19,12 +19,15 @@ public class MainGraphic extends JPanel implements ActionListener {
     private static String PARSE_COMMAND = "parse";
     private static String LOAD_COMMAND = "load_xml";
     private static String SAVE_COMMAND = "save_xml";
+    private static String METHOD_COMMAND = "change_method";
 
     private JFileChooser fc;
     private AhpTreeGraphic treePanel;
+    private JFrame mainFrame;
 
-    public MainGraphic() {
+    public MainGraphic(JFrame mainFrame) {
         super(new BorderLayout());
+        this.mainFrame = mainFrame;
 
         fc = new JFileChooser();
         File workingDirectory = new File(System.getProperty("user.dir"));
@@ -56,6 +59,10 @@ public class MainGraphic extends JPanel implements ActionListener {
         saveButton.setActionCommand(SAVE_COMMAND);
         saveButton.addActionListener(this);
 
+        JButton methodButton = new JButton("Change method");
+        methodButton.setActionCommand(METHOD_COMMAND);
+        methodButton.addActionListener(this);
+
         JButton clearButton = new JButton("Clear");
         clearButton.setActionCommand(CLEAR_COMMAND);
         clearButton.addActionListener(this);
@@ -64,13 +71,14 @@ public class MainGraphic extends JPanel implements ActionListener {
         treePanel.setPreferredSize(new Dimension(400, 500));
         add(treePanel, BorderLayout.CENTER);
 
-        JPanel panel = new JPanel(new GridLayout(7, 0));
+        JPanel panel = new JPanel(new GridLayout(8, 0));
         panel.add(addButton);
         panel.add(removeButton);
         panel.add(editButton);
         panel.add(parseButton);
         panel.add(loadButton);
         panel.add(saveButton);
+        panel.add(methodButton);
         panel.add(clearButton);
         add(panel, BorderLayout.EAST);
     }
@@ -119,9 +127,10 @@ public class MainGraphic extends JPanel implements ActionListener {
             treePanel.addObject(new AhpNodeGraphic("New Node " + newNodeSuffix++));
         } else if (REMOVE_COMMAND.equals(command)) {
             treePanel.removeCurrentNode();
-        }  else if (EDIT_COMMAND.equals(command)) {
-            treePanel.edit();
-        }  else if (PARSE_COMMAND.equals(command)) {
+        } else if (EDIT_COMMAND.equals(command)) {
+            mainFrame.setEnabled(false);
+            treePanel.edit(mainFrame);
+        } else if (PARSE_COMMAND.equals(command)) {
             treePanel.parse();
         } else if (CLEAR_COMMAND.equals(command)) {
             treePanel.clear();
@@ -137,6 +146,13 @@ public class MainGraphic extends JPanel implements ActionListener {
                 File file = fc.getSelectedFile();
                 treePanel.load(file.getAbsolutePath());
             }
+        } else if (METHOD_COMMAND.equals(command)) {
+            String[] choices = { "eigenvector", "geometric mean" };
+            String method = (String) JOptionPane.showInputDialog(null, "Methods:",
+                    "How to compute weight vectors", JOptionPane.QUESTION_MESSAGE, null,
+                    choices, // Array of choices
+                    choices[0]); // Initial choice
+            treePanel.changeMethod(method);
         }
     }
 
@@ -146,16 +162,17 @@ public class MainGraphic extends JPanel implements ActionListener {
      */
     private static void createAndShowGUI() {
         // Create and set up the window.
-        JFrame frame = new JFrame("MainGraphic");
+        JFrame frame = new JFrame("AHP");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and set up the content pane.
-        MainGraphic newContentPane = new MainGraphic();
+        MainGraphic newContentPane = new MainGraphic(frame);
         newContentPane.setOpaque(true); // content panes must be opaque
         frame.setContentPane(newContentPane);
 
         // Display the window.
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 

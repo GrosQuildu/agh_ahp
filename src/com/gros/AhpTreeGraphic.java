@@ -35,9 +35,11 @@ class AhpTreeGraphic extends JPanel {
     protected AhpTreeModel treeModel;
     protected JTree tree;
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
+    public PriorityVectorMethod method;
 
     public AhpTreeGraphic() {
         super(new GridLayout(1, 0));
+        setMethod("eigenvector");
 
         rootNode = new DefaultMutableTreeNode(new AhpNodeGraphic("AHP"));
         treeModel = new AhpTreeModel(rootNode);
@@ -52,7 +54,6 @@ class AhpTreeGraphic extends JPanel {
         JScrollPane scrollPane = new JScrollPane(tree);
         add(scrollPane);
     }
-
 
     public AhpNodeGraphic getCriterionsRoot() {
         DefaultMutableTreeNode criterions = (DefaultMutableTreeNode)rootNode.getChildAt(0);
@@ -122,6 +123,10 @@ class AhpTreeGraphic extends JPanel {
             AhpTree parsedTree = AhpTree.fromXml(path, "eigenvalue");
             clear();
 
+            AhpNodeGraphic goal = getCriterionsRoot();
+            goal.matrix = parsedTree.goal.matrix;
+            goal.updateEigen();
+
             for(AhpNode child : parsedTree.goal.list)
                 loadSubtree((DefaultMutableTreeNode)rootNode.getChildAt(0), child);
 
@@ -145,26 +150,29 @@ class AhpTreeGraphic extends JPanel {
 
     /** Parse **/
     public void parse() {
-        AhpNodeGraphic criterionsRoot = getCriterionsRoot();
-        System.out.println(criterionsRoot.getResult(""));
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                AhpParse parseFrame = new AhpParse(getCriterionsRoot(), method);
+            }
+        });
     }
 
     /** Edit node **/
-    public void edit() {
+    public void edit(JFrame mainFrame) {
         TreePath currentSelection = tree.getSelectionPath();
         if (currentSelection != null) {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelection.getLastPathComponent());
             AhpNodeGraphic ahpCurrentNode = (AhpNodeGraphic)currentNode.getUserObject();
             if(!ahpCurrentNode.isAlternative) {
-                System.out.println("edit");
+                this.getParent().setEnabled(false);
                 javax.swing.SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        AhpEditNodeGraphic editFrame = new AhpEditNodeGraphic(ahpCurrentNode);
+                        AhpEditNodeGraphic editFrame = new AhpEditNodeGraphic(ahpCurrentNode, mainFrame);
                     }
                 });
             }
             else
-                System.out.println("can't edit root");
+                System.out.println("can't edit it");
             return;
         }
         toolkit.beep();
@@ -180,6 +188,18 @@ class AhpTreeGraphic extends JPanel {
             subrootNode.removeAllChildren();
         }
         treeModel.reload();
+    }
+
+    /** Change method for computing weights vectors **/
+    public void changeMethod(String method) {
+        setMethod(method);
+    }
+
+    private void setMethod(String method) {
+        if("eigenvector".equals(method))
+            this.method = new EigenvectorMethod();
+        else
+            this.method = new GeometricMeanMethod();
     }
 
     /** Remove the currently selected node. */
