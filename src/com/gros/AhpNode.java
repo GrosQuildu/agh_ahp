@@ -94,9 +94,10 @@ public class AhpNode {
         if(this.list.size() == 0)
             return weights;
 
-        Matrix finallWeights = this.list.get(0).getWeightsVector(matrix, method).times(weights.get(0, 0));
+        Matrix stmp = this.list.get(0).getWeightsVector(method);
+        Matrix finallWeights = stmp.times(weights.get(0, 0));
         for(int i = 1; i < this.list.size(); i++) {
-            Matrix tmp = this.list.get(i).getWeightsVector(matrix,method).times(weights.get(i, 0));
+            Matrix tmp = this.list.get(i).getWeightsVector(method).times(weights.get(i, 0));
             finallWeights.plusEquals(tmp);  // W += w'_i * w_j
         }
         return finallWeights;
@@ -198,7 +199,10 @@ public class AhpNode {
 
     static double consistencyIndex(Matrix matrix, double maxEigenvalue) {
         int n = matrix.getRowDimension();
-        return (maxEigenvalue - n) / (n - 1);
+        double tmp = (maxEigenvalue - n) / (n - 1);
+        if(tmp < 0)
+            return -tmp;
+        return tmp;
     }
 
     public static int factorial(int n) {

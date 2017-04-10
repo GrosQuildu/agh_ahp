@@ -20,6 +20,7 @@ public class MainGraphic extends JPanel implements ActionListener {
     private static String LOAD_COMMAND = "load_xml";
     private static String SAVE_COMMAND = "save_xml";
     private static String METHOD_COMMAND = "change_method";
+    private static String REQ_COMMAND = "change_req";
 
     private JFileChooser fc;
     private AhpTreeGraphic treePanel;
@@ -63,6 +64,10 @@ public class MainGraphic extends JPanel implements ActionListener {
         methodButton.setActionCommand(METHOD_COMMAND);
         methodButton.addActionListener(this);
 
+        JButton reqButton = new JButton("Change cons. req.");
+        reqButton.setActionCommand(REQ_COMMAND);
+        reqButton.addActionListener(this);
+
         JButton clearButton = new JButton("Clear");
         clearButton.setActionCommand(CLEAR_COMMAND);
         clearButton.addActionListener(this);
@@ -71,7 +76,7 @@ public class MainGraphic extends JPanel implements ActionListener {
         treePanel.setPreferredSize(new Dimension(400, 500));
         add(treePanel, BorderLayout.CENTER);
 
-        JPanel panel = new JPanel(new GridLayout(8, 0));
+        JPanel panel = new JPanel(new GridLayout(9, 0));
         panel.add(addButton);
         panel.add(removeButton);
         panel.add(editButton);
@@ -79,6 +84,7 @@ public class MainGraphic extends JPanel implements ActionListener {
         panel.add(loadButton);
         panel.add(saveButton);
         panel.add(methodButton);
+        panel.add(reqButton);
         panel.add(clearButton);
         add(panel, BorderLayout.EAST);
     }
@@ -147,12 +153,9 @@ public class MainGraphic extends JPanel implements ActionListener {
                 treePanel.load(file.getAbsolutePath());
             }
         } else if (METHOD_COMMAND.equals(command)) {
-            String[] choices = { "eigenvector", "geometric mean" };
-            String method = (String) JOptionPane.showInputDialog(null, "Methods:",
-                    "How to compute weight vectors", JOptionPane.QUESTION_MESSAGE, null,
-                    choices, // Array of choices
-                    choices[0]); // Initial choice
-            treePanel.changeMethod(method);
+            treePanel.changeMethod();
+        } else if (REQ_COMMAND.equals(command)) {
+            treePanel.changeReq();
         }
     }
 

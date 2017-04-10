@@ -21,8 +21,7 @@ public class AhpParse extends JPanel {
         this.node = node;
         this.method = method;
 
-        weightsPanel = new JPanel(new SpringLayout());
-        weightsPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        weightsPanel = new JPanel(new GridLayout(0,2));
         prepareWeights();
 
         JScrollPane scrollWeights = new JScrollPane(weightsPanel);
@@ -41,12 +40,20 @@ public class AhpParse extends JPanel {
         for(int i=0; i < weightsNames.size(); i++)
             result.put(weightsNames.get(i), weights.get(i, 0));
         result = AhpTree.sortByValue(result);
-        AhpEditNodeGraphic.prepareWeights(weightsPanel, result);
 
-        SpringUtilities.makeCompactGrid(weightsPanel,
-                result.size(), 2,
-                20, 20,
-                10, 10);
+
+        for(Map.Entry<String, Double> entry : result.entrySet()) {
+            JTextField label = new JTextField(entry.getKey());
+            JTextField value = new JTextField(String.format("%.4f", entry.getValue()));
+            label.setEditable(false);
+            value.setEnabled(false);
+
+            label.setFont(new Font(label.getFont().getName(), Font.BOLD,15));
+            value.setFont(new Font(value.getFont().getName(), Font.BOLD,15));
+
+            weightsPanel.add(label);
+            weightsPanel.add(value);
+        }
     }
 
 

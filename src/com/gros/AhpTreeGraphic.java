@@ -13,11 +13,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -36,14 +32,15 @@ class AhpTreeGraphic extends JPanel {
     protected JTree tree;
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
     public PriorityVectorMethod method;
+    double req;
 
     public AhpTreeGraphic() {
         super(new GridLayout(1, 0));
         setMethod("eigenvector");
+        this.req = 0.1;
 
         rootNode = new DefaultMutableTreeNode(new AhpNodeGraphic("AHP"));
         treeModel = new AhpTreeModel(rootNode);
-        treeModel.addTreeModelListener(new MyTreeModelListener());
 
         tree = new JTree(treeModel);
         tree.setShowsRootHandles(true);
@@ -90,11 +87,13 @@ class AhpTreeGraphic extends JPanel {
         int size = getAlternativesRoot().getChilds().size();
         for(AhpNode nodeTmp : getLeafs()) {
             nodeTmp.matrix = new Matrix(size, size, 1);
+            nodeTmp.updateEigen();
         }
     }
 
     /** Save XML **/
     public void save(String path) {
+        String error = null;
         if(!path.endsWith(".xml"))
             path += ".xml";
         try {
@@ -109,11 +108,17 @@ class AhpTreeGraphic extends JPanel {
             writer.print(ahpTree.toXml());
             writer.close();
         } catch (FileNotFoundException e) {
-            System.out.println("File not found");
+            error = "Can't save";
         } catch (UnsupportedEncodingException e) {
-            System.out.println("Encoding not supported");
+            error = "Encoding not supported";
         } catch (JSONException e) {
-            System.out.println("JSON exception");
+            error = "JSON exception";
+        }
+        if(error != null) {
+            JOptionPane.showMessageDialog(null,
+                    ""+error,
+                    "Error saving XML",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -191,8 +196,13 @@ class AhpTreeGraphic extends JPanel {
     }
 
     /** Change method for computing weights vectors **/
-    public void changeMethod(String method) {
-        setMethod(method);
+    public void changeMethod() {
+        String[] choices = { "eigenvector", "geometric mean" };
+        String methodNew = (String) JOptionPane.showInputDialog(null, "Methods:",
+                "How to compute weight vectors", JOptionPane.QUESTION_MESSAGE, null,
+                choices,
+                choices[0]);
+        setMethod(methodNew);
     }
 
     private void setMethod(String method) {
@@ -200,6 +210,16 @@ class AhpTreeGraphic extends JPanel {
             this.method = new EigenvectorMethod();
         else
             this.method = new GeometricMeanMethod();
+    }
+
+    public void changeReq() {
+        String reqString = (String) JOptionPane.showInputDialog(null, "Requirement",
+                "Minimum consistency requirement:", JOptionPane.QUESTION_MESSAGE, null, null, this.req);
+        double tmp = 0.1;
+        try {
+            tmp = Double.parseDouble(reqString);
+        } catch (Exception w) {}
+        this.req = tmp;
     }
 
     /** Remove the currently selected node. */
@@ -216,10 +236,9 @@ class AhpTreeGraphic extends JPanel {
                     return;
 
                 //update leafs if deleted alternative
-                if(ahpCurrentNode.isAlternative) {
+                if(ahpCurrentNode.isAlternative)
                     updateLeafs();
-                    return;
-                }
+
                 AhpNodeGraphic ahpParentNode = (AhpNodeGraphic)parent.getUserObject();
                 ahpParentNode.removeChild(ahpCurrentNode);
                 treeModel.removeNodeFromParent(currentNode);
@@ -292,37 +311,5 @@ class AhpTreeGraphic extends JPanel {
             tree.scrollPathToVisible(new TreePath(childNode.getPath()));
         }
         return childNode;
-    }
-
-    class MyTreeModelListener implements TreeModelListener {
-        public void treeNodesChanged(TreeModelEvent e) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) (e.getTreePath().getLastPathComponent());
-
-      /*
-       * If the event lists children, then the changed node is the child of the
-       * node we've already gotten. Otherwise, the changed node and the
-       * specified node are the same.
-       */
-
-            int index = e.getChildIndices()[0];
-            node = (DefaultMutableTreeNode) (node.getChildAt(index));
-
-            System.out.println("The user has finished editing the node.");
-            System.out.println("New value: " + node.getUserObject());
-        }
-
-        public void treeNodesInserted(TreeModelEvent e) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) (e.getTreePath().getLastPathComponent());
-            AhpNodeGraphic ahpNode = (AhpNodeGraphic)node.getUserObject();
-        }
-
-        public void treeNodesRemoved(TreeModelEvent e) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) (e.getTreePath().getLastPathComponent());
-            AhpNodeGraphic ahpNode = (AhpNodeGraphic)node.getUserObject();
-        }
-
-        public void treeStructureChanged(TreeModelEvent e) {
-            System.out.println("changed struct");
-        }
     }
 }

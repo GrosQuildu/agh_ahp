@@ -21,6 +21,7 @@ public class AhpEditNodeGraphic extends JPanel {
     ArrayList<JTextField> consistencies;
 
     PriorityVectorMethod method;
+    double req;
 
     private JPanel consistencyPanel;
     private JPanel questionPanel;
@@ -35,6 +36,10 @@ public class AhpEditNodeGraphic extends JPanel {
         this.mainFrame = mainFrame;
         this.node = currentNode;
         this.method = node.tree.method;
+        this.req = node.tree.req;
+
+        System.out.println("new matrix");
+        this.node.matrix.print(10,10);
 
         /** Main questions panel **/
         questionPanel = new JPanel();
@@ -307,12 +312,12 @@ public class AhpEditNodeGraphic extends JPanel {
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 double checkConsistencynode = node.consistencyRatio();
-                if(checkConsistencynode <= 0.1) {
+                if(checkConsistencynode <= req) {
                     mainFrame.setEnabled(true);
                     frame.dispose();
                 } else
                     JOptionPane.showMessageDialog(frame,
-                            "Matrix is too inconsistent, max ratio is 0.1",
+                            "Matrix is too inconsistent, max ratio is "+req,
                             "Consistency error",
                             JOptionPane.ERROR_MESSAGE);
             }
