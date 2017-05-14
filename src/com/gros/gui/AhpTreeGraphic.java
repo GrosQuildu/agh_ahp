@@ -202,7 +202,8 @@ class AhpTreeGraphic extends JPanel {
                 choices,
                 choices[currentPosition]);
         try {
-            this.method = AhpTree.createMethod(methodNew);
+            if(methodNew != null)
+                this.method = AhpTree.createMethod(methodNew);
         } catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
             this.method = new Eigenvector();
