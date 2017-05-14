@@ -93,7 +93,6 @@ class AhpTreeGraphic extends JPanel {
         int size = getAlternativesRoot().getChilds().size();
         for(AhpNode nodeTmp : getLeafs()) {
             nodeTmp.matrix = new Matrix(size, size, 1);
-            nodeTmp.updateEigen();
         }
     }
 
@@ -136,7 +135,6 @@ class AhpTreeGraphic extends JPanel {
 
             AhpNodeGraphic goal = getCriterionsRoot();
             goal.matrix = parsedTree.goal.matrix;
-            goal.updateEigen();
 
             for(AhpNode child : parsedTree.goal.list)
                 loadSubtree((DefaultMutableTreeNode)rootNode.getChildAt(0), child);

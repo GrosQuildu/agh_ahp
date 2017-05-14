@@ -1,6 +1,7 @@
 package com.gros.methods;
 
 import Jama.Matrix;
+import com.gros.Eigenvalue;
 import com.gros.console.AhpNode;
 
 /**
@@ -8,7 +9,7 @@ import com.gros.console.AhpNode;
  */
 public class Eigenvector implements PriorityVector {
     public Matrix getPriorityVector(AhpNode node) {
-        Matrix maxEigenvector = node.getMaxEigenvector();
+        Matrix maxEigenvector = Eigenvalue.getMaxEigenvector(node.getMatrix());
         double sum = 0;
         for(double x : maxEigenvector.getArray()[0])
             sum += x;

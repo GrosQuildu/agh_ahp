@@ -244,21 +244,18 @@ class AhpEditNodeGraphic extends JPanel {
                     @Override
                     public void removeUpdate(DocumentEvent e) {
                         updateMatrix();
-                        node.updateEigen();
                         updateConsistencies();
                     }
 
                     @Override
                     public void insertUpdate(DocumentEvent e) {
                         updateMatrix();
-                        node.updateEigen();
                         updateConsistencies();
                     }
 
                     @Override
                     public void changedUpdate(DocumentEvent e) {
                         updateMatrix();
-                        node.updateEigen();
                         updateConsistencies();
                     }
 

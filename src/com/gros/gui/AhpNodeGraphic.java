@@ -28,7 +28,6 @@ public class AhpNodeGraphic extends AhpNode {
         this.name = node.name;
         this.matrix = node.matrix;
         this.list = new ArrayList<>();
-        this.updateEigen();
     }
 
     @Override
@@ -51,6 +50,5 @@ public class AhpNodeGraphic extends AhpNode {
         if(this.matrix == null || this.matrix.getRowDimension() != size) {
             this.matrix = new Matrix(size,size,1);
         }
-        this.updateEigen();
     }
 }

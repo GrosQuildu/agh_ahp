@@ -1,14 +1,15 @@
-package com.gros.console;
+package com.gros;
 
 import Jama.Matrix;
+import com.gros.console.AhpNode;
 
 import java.util.Random;
 
 /**
  * Created by gros on 19.03.17.
  */
-class Utils {
-    static AhpNode randomMatrices(int alternatives, int criterionsDeep, int maxCriterions, int inconsistency) {
+public class Utils {
+    public static AhpNode randomMatrices(int alternatives, int criterionsDeep, int maxCriterions, int inconsistency) {
         if(alternatives < 2)
             return null;
         Random rand = new Random();
@@ -23,7 +24,7 @@ class Utils {
         }
     }
 
-    static Matrix randomMatrix(int size, int inconsistency) {
+    public static Matrix randomMatrix(int size, int inconsistency) {
         Matrix weights = Matrix.random(size, 1);
         double sum = 0;
         for(double x : weights.getArray()[0])
