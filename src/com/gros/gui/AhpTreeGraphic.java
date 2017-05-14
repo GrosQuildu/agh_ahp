@@ -170,7 +170,7 @@ class AhpTreeGraphic extends JPanel {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelection.getLastPathComponent());
             AhpNodeGraphic ahpCurrentNode = (AhpNodeGraphic)currentNode.getUserObject();
             if(!ahpCurrentNode.isAlternative) {
-                this.getParent().setEnabled(false);
+                mainFrame.setEnabled(false);
                 javax.swing.SwingUtilities.invokeLater(() -> new AhpEditNodeGraphic(ahpCurrentNode, mainFrame));
             }
             else
@@ -195,7 +195,7 @@ class AhpTreeGraphic extends JPanel {
     /** Change method for computing weights vectors **/
     void changeMethod() {
         String[] choices = AhpTree.implementedMethods.toArray(new String[AhpTree.implementedMethods.size()]);
-        int currentPosition = AhpTree.implementedMethods.indexOf(this.method);
+        int currentPosition = AhpTree.implementedMethods.indexOf(this.method.toString());
         if(currentPosition == -1)
             currentPosition = 0;
         String methodNew = (String) JOptionPane.showInputDialog(null, "Methods:",

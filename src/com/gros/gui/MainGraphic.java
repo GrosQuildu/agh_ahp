@@ -136,7 +136,6 @@ public class MainGraphic extends JPanel implements ActionListener {
             treePanel.removeCurrentNode();
         }
         else if (EDIT_COMMAND.equals(command)) {
-            mainFrame.setEnabled(false);
             treePanel.edit(mainFrame);
         }
         else if (PARSE_COMMAND.equals(command)) {
@@ -185,6 +184,6 @@ public class MainGraphic extends JPanel implements ActionListener {
     }
 
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> createAndShowGUI());
+        javax.swing.SwingUtilities.invokeLater(MainGraphic::createAndShowGUI);
     }
 }
