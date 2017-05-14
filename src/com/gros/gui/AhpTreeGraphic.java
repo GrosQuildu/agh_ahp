@@ -130,7 +130,7 @@ class AhpTreeGraphic extends JPanel {
     /** Load XML **/
     void load(String path) {
         try {
-            AhpTree parsedTree = AhpTree.fromXml(path, "eigenvalue");
+            AhpTree parsedTree = AhpTree.fromXml(path, "eigenvector");
             clear();
 
             AhpNodeGraphic goal = getCriterionsRoot();
@@ -217,6 +217,7 @@ class AhpTreeGraphic extends JPanel {
             return;
         try {
             double tmp;
+            reqString = reqString.replace(',', '.');
             tmp = Double.parseDouble(reqString);
             if(tmp <= 0 || tmp > 1)
                 throw new ValueException("");
