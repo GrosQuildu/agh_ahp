@@ -178,6 +178,7 @@ public class MainGraphic extends JPanel implements ActionListener {
         newContentPane.setOpaque(true); // content panes must be opaque
         frame.setContentPane(newContentPane);
 
+        frame.setMinimumSize(new Dimension(500, 500));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

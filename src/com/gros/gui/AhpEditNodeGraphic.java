@@ -100,7 +100,7 @@ class AhpEditNodeGraphic extends JPanel {
         ArrayList<JTextField> values = new ArrayList<>();
         for(Map.Entry<String, Double> entry : result.entrySet()) {
             labels.add(new JLabel(entry.getKey()));
-            values.add(new JTextField(String.format("%.4f", entry.getValue())));
+            values.add(createTextField(String.format("%.4f", entry.getValue())));
         }
 
         for (int i = 0; i < labels.size(); i++) {
@@ -133,7 +133,7 @@ class AhpEditNodeGraphic extends JPanel {
 
     private void prepareWeightsThis() {
         JLabel methodLabel = new JLabel("Current method: ");
-        JTextField methodValue = new JTextField(method.toString());
+        JTextField methodValue = createTextField(method.toString());
         methodValue.setEditable(false);
         methodValue.setMaximumSize( methodValue.getPreferredSize() );
         methodLabel.setLabelFor(methodValue);
@@ -157,8 +157,18 @@ class AhpEditNodeGraphic extends JPanel {
                 10, 10);
     }
 
+    static private JTextField createTextField(String text) {
+        JTextField textField = new JTextField(text);
+        textField.setEditable(false);
+        textField.setBorder(BorderFactory.createCompoundBorder(
+                textField.getBorder(),
+                BorderFactory.createEmptyBorder(3,3,3,3))
+        );
+        return textField;
+    }
+
     private void prepareConsistencies(GroupLayout layout) {
-        consistencies = new ArrayList<>();
+        this.consistencies = new ArrayList<>();
 
         JLabel IndexLabel = new JLabel("Index: ");
         JLabel RatioLabel = new JLabel("Ratio: ");
@@ -167,20 +177,15 @@ class AhpEditNodeGraphic extends JPanel {
         JLabel HarmonicIndexLabel = new JLabel("Harmonic Index: ");
 
 
-        JTextField IndexTextField = new JTextField(String.format("%.4f", node.consistencyIndex()));
-        IndexTextField.setEditable(false);
+        JTextField IndexTextField = createTextField(String.format("%.4f", node.consistencyIndex()));
         consistencies.add(IndexTextField);
-        JTextField RatioTextField = new JTextField(String.format("%.4f", node.consistencyRatio()));
-        RatioTextField.setEditable(false);
+        JTextField RatioTextField = createTextField(String.format("%.4f", node.consistencyRatio()));
         consistencies.add(RatioTextField);
-        JTextField IndexOfDeterminantsTextField = new JTextField(String.format("%.4f", node.consistencyIndexOfDeterminants()));
-        IndexOfDeterminantsTextField.setEditable(false);
+        JTextField IndexOfDeterminantsTextField = createTextField(String.format("%.4f", node.consistencyIndexOfDeterminants()));
         consistencies.add(IndexOfDeterminantsTextField);
-        JTextField GeometricIndexTextField = new JTextField(String.format("%.4f", node.consistencyGeometricIndex()));
-        GeometricIndexTextField.setEditable(false);
+        JTextField GeometricIndexTextField = createTextField(String.format("%.4f", node.consistencyGeometricIndex()));
         consistencies.add(GeometricIndexTextField);
-        JTextField HarmonicIndexTextField = new JTextField(String.format("%.4f", node.consistencyHarmonicIndex()));
-        HarmonicIndexTextField.setEditable(false);
+        JTextField HarmonicIndexTextField = createTextField(String.format("%.4f", node.consistencyHarmonicIndex()));
         consistencies.add(HarmonicIndexTextField);
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
@@ -303,6 +308,7 @@ class AhpEditNodeGraphic extends JPanel {
         newContentPane.setOpaque(true); // content panes must be opaque
         frame.setContentPane(newContentPane);
 
+        frame.setMinimumSize(new Dimension(500, 500));
         frame.pack();
         frame.setLocationRelativeTo(this.getParent());
         frame.setVisible(true);
