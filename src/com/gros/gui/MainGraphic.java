@@ -64,7 +64,7 @@ public class MainGraphic extends JPanel implements ActionListener {
         methodButton.setActionCommand(METHOD_COMMAND);
         methodButton.addActionListener(this);
 
-        JButton reqButton = new JButton("Change cons. requirement.");
+        JButton reqButton = new JButton("Change cons. requirement");
         reqButton.setActionCommand(REQ_COMMAND);
         reqButton.addActionListener(this);
 
@@ -162,7 +162,7 @@ public class MainGraphic extends JPanel implements ActionListener {
             treePanel.changeMethod();
         }
         else if (REQ_COMMAND.equals(command)) {
-            treePanel.changeReq();
+            treePanel.changeRequirement();
         }
     }
 

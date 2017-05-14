@@ -37,7 +37,7 @@ class AhpEditNodeGraphic extends JPanel {
         this.mainFrame = mainFrame;
         this.node = currentNode;
         this.method = node.tree.getMethod();
-        this.requirement = node.tree.req;
+        this.requirement = node.tree.requirement;
 
         System.out.println("new matrix");
         this.node.matrix.print(10,10);

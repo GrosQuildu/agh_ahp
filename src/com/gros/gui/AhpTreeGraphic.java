@@ -7,6 +7,7 @@ import com.gros.console.AhpTree;
 import com.gros.methods.Eigenvector;
 import com.gros.methods.PriorityVector;
 
+import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import org.json.JSONException;
 
 import java.awt.GridLayout;
@@ -30,7 +31,7 @@ class AhpTreeGraphic extends JPanel {
     private JTree tree;
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
     private PriorityVector method;
-    double req;
+    double requirement;
 
     AhpTreeGraphic() {
         super(new GridLayout(1, 0));
@@ -39,7 +40,7 @@ class AhpTreeGraphic extends JPanel {
         } catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
-        this.req = 0.1;
+        this.requirement = 0.1;
 
         rootNode = new DefaultMutableTreeNode(new AhpNodeGraphic("AHP"));
         treeModel = new AhpTreeModel(rootNode);
@@ -210,14 +211,24 @@ class AhpTreeGraphic extends JPanel {
         }
     }
 
-    void changeReq() {
+    void changeRequirement() {
         String reqString = (String) JOptionPane.showInputDialog(null, "Requirement",
-                "Minimum consistency requirement:", JOptionPane.QUESTION_MESSAGE, null, null, this.req);
-        double tmp = 0.1;
+                "Minimum consistency requirement:", JOptionPane.QUESTION_MESSAGE, null, null, this.requirement);
+        if(reqString == null)
+            return;
         try {
+            double tmp;
             tmp = Double.parseDouble(reqString);
-        } catch (Exception ignored) {}
-        this.req = tmp;
+            if(tmp <= 0 || tmp > 1)
+                throw new ValueException("");
+            this.requirement = tmp;
+        } catch (NumberFormatException | ValueException e) {
+            JOptionPane.showMessageDialog(null,
+                    "Wrong consistency requirement, must be in (0,1]",
+                    "Requirement error",
+                    JOptionPane.ERROR_MESSAGE);
+            changeRequirement();
+        }
     }
 
     /** Remove the currently selected node. */
