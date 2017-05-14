@@ -1,6 +1,9 @@
-package com.gros;
+package com.gros.gui;
 
 import Jama.Matrix;
+import com.gros.console.AhpNode;
+import com.gros.console.AhpTree;
+import com.gros.methods.PriorityVector;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -15,33 +18,31 @@ import java.util.Map;
 /**
  * Created by gros on 09.04.17.
  */
-public class AhpEditNodeGraphic extends JPanel {
-    AhpNodeGraphic node;
-    ArrayList<JTextArea> inputs;
-    ArrayList<JTextField> consistencies;
+class AhpEditNodeGraphic extends JPanel {
+    private AhpNodeGraphic node;
+    private ArrayList<JTextArea> inputs;
+    private ArrayList<JTextField> consistencies;
 
-    PriorityVectorMethod method;
-    double req;
+    private PriorityVector method;
+    private double requirement;
 
-    private JPanel consistencyPanel;
     private JPanel questionPanel;
     private JPanel weightsPanel;
     private JPanel weightsPanelThis;
-    private JPanel rightPanel;
 
     private JFrame mainFrame;
 
-    public AhpEditNodeGraphic(AhpNodeGraphic currentNode, JFrame mainFrame) {
+    AhpEditNodeGraphic(AhpNodeGraphic currentNode, JFrame mainFrame) {
         super(new BorderLayout());
         this.mainFrame = mainFrame;
         this.node = currentNode;
-        this.method = node.tree.method;
-        this.req = node.tree.req;
+        this.method = node.tree.getMethod();
+        this.requirement = node.tree.req;
 
         System.out.println("new matrix");
         this.node.matrix.print(10,10);
 
-        /** Main questions panel **/
+        /* Main questions panel */
         questionPanel = new JPanel();
         questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.Y_AXIS));
         prepareQuestions();
@@ -49,8 +50,8 @@ public class AhpEditNodeGraphic extends JPanel {
         scrollPane.setPreferredSize(new Dimension(500, 700));
         add(scrollPane);
 
-        /** Right consistency panel **/
-        consistencyPanel = new JPanel();
+        /* Right consistency panel */
+        JPanel consistencyPanel = new JPanel();
         GroupLayout layout = new GroupLayout(consistencyPanel);
         consistencyPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -60,7 +61,7 @@ public class AhpEditNodeGraphic extends JPanel {
         JScrollPane scrollInfo = new JScrollPane(consistencyPanel);
         scrollInfo.setPreferredSize(new Dimension(300, 100));
 
-        /** Right weights this panel **/
+        /* Right weights this panel */
         weightsPanelThis = new JPanel(new SpringLayout());
         weightsPanelThis.setAlignmentX(Component.RIGHT_ALIGNMENT);
         prepareWeightsThis();
@@ -70,7 +71,7 @@ public class AhpEditNodeGraphic extends JPanel {
 
         JScrollPane scrollWeights = null;
         if(node.list.size() != 0) {
-            /** Right weights panel **/
+            /* Right weights panel */
             weightsPanel = new JPanel(new SpringLayout());
             weightsPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
             prepareWeights();
@@ -79,8 +80,8 @@ public class AhpEditNodeGraphic extends JPanel {
             scrollWeights.setPreferredSize(new Dimension(300, 100));
         }
 
-        /** Right panel **/
-        rightPanel = new JPanel();
+        /* Right panel */
+        JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.add(scrollInfo);
         rightPanel.add(scrollWeightsThis);
@@ -94,7 +95,7 @@ public class AhpEditNodeGraphic extends JPanel {
         createAndShowGUI();
     }
 
-    static void prepareWeights(JPanel panel, Map<String, Double> result) {
+    private static void prepareWeights(JPanel panel, Map<String, Double> result) {
         ArrayList<JLabel> labels = new ArrayList<>();
         ArrayList<JTextField> values = new ArrayList<>();
         for(Map.Entry<String, Double> entry : result.entrySet()) {
@@ -290,7 +291,7 @@ public class AhpEditNodeGraphic extends JPanel {
                                 node.matrix.set(row, col, value);
                                 System.out.println("New matrix:");
                                 node.matrix.print(10,10);
-                            } catch (Exception e) {}
+                            } catch (Exception ignored) {}
                         }
                     }
                 });
@@ -312,12 +313,12 @@ public class AhpEditNodeGraphic extends JPanel {
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 double checkConsistencynode = node.consistencyRatio();
-                if(checkConsistencynode <= req) {
+                if(checkConsistencynode <= requirement) {
                     mainFrame.setEnabled(true);
                     frame.dispose();
                 } else
                     JOptionPane.showMessageDialog(frame,
-                            "Matrix is too inconsistent, max ratio is "+req,
+                            "Matrix is too inconsistent, max ratio is "+ requirement,
                             "Consistency error",
                             JOptionPane.ERROR_MESSAGE);
             }

@@ -1,8 +1,8 @@
-package com.gros;
+package com.gros.gui;
 
 import Jama.Matrix;
+import com.gros.console.AhpNode;
 
-import javax.swing.tree.MutableTreeNode;
 import java.util.ArrayList;
 
 /**
@@ -10,10 +10,10 @@ import java.util.ArrayList;
  * Extends AhpNode
  */
 public class AhpNodeGraphic extends AhpNode {
-    public boolean isRoot = false;
-    public boolean isAlternative = false;
-    public AhpTreeGraphic tree;
-    public AhpNodeGraphic parent;
+    boolean isRoot = false;
+    boolean isAlternative = false;
+    AhpTreeGraphic tree;
+    AhpNodeGraphic parent;
 
     AhpNodeGraphic(String name) {
         super(name);
@@ -36,13 +36,13 @@ public class AhpNodeGraphic extends AhpNode {
         return this.name;
     }
 
-    public ArrayList<AhpNode> getChilds() {
+    ArrayList<AhpNode> getChilds() {
         if(this.list.size() == 0)
             return tree.getAlternativesRoot().list;
         return this.list;
     }
 
-    public void setMatrix() {
+    void setMatrix() {
         int size = this.list.size();
         if(size == 0 && this.tree != null && tree.getAlternativesRoot() != null)
             size = tree.getAlternativesRoot().list.size();

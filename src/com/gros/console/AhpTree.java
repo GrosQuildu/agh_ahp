@@ -1,46 +1,72 @@
-package com.gros;
+package com.gros.console;
 
 import Jama.Matrix;
-import jdk.internal.org.xml.sax.SAXException;
+
+import com.gros.methods.Eigenvector;
+import com.gros.methods.PriorityVector;
 import org.json.JSONException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
  * Created by gros on 19.03.17.
  */
 public class AhpTree {
-    AhpNode goal;
-    ArrayList<String> alternatives;
-    public PriorityVectorMethod method;
+    public AhpNode goal;
+    public ArrayList<String> alternatives;
+    private PriorityVector method;
+    public static final List<String> implementedMethods = Arrays.asList("eigenvector", "geometric mean");
 
-    AhpTree(AhpNode root, ArrayList<String> alternatives, String method) {
+    public AhpTree(AhpNode root, ArrayList<String> alternatives, String method) {
         this(root, alternatives);
         setMethod(method);
     }
 
-    AhpTree(AhpNode root, ArrayList<String> alternatives) {
+    public AhpTree(AhpNode root, ArrayList<String> alternatives) {
         this.goal = root;
         this.alternatives = alternatives;
     }
 
-    public void setMethod(String method) {
-        if("eigenvector".equals(method))
-            this.method = new EigenvectorMethod();
-        else
-            this.method = new GeometricMeanMethod();
+    private static String makeClassName(String method) {
+        String[] arr = method.split(" ");
+        StringBuilder sb = new StringBuilder();
+
+        for (String anArr : arr) {
+            sb.append(Character.toUpperCase(anArr.charAt(0)))
+                    .append(anArr.substring(1)).append(" ");
+        }
+        return sb.toString().trim().replaceAll("\\s+", "");
     }
 
-    static AhpTree fromXml(String path, String method) throws Exception {
+    void setMethod(String method) {
+        try {
+            this.method = AhpTree.createMethod(method);
+        } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Setting eigenvector method");
+            this.method = new Eigenvector();
+        }
+    }
+
+    static public PriorityVector createMethod(String method) throws ClassNotFoundException {
+        if(implementedMethods.contains(method)) {
+            String methodClass = "com.gros.methods." + makeClassName(method);
+            try {
+                Object newMethod = Class.forName(methodClass).newInstance();
+                return (PriorityVector)newMethod;
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new ClassNotFoundException("Method " + methodClass + " not implemented");
+            }
+        } else {
+            throw new ClassNotFoundException("Method " + method + " not implemented");
+        }
+    }
+
+    public static AhpTree fromXml(String path, String method) throws Exception {
         File inputFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -48,7 +74,7 @@ public class AhpTree {
         doc.getDocumentElement().normalize();
 
         Element goalElement = doc.getDocumentElement();
-        ArrayList<String> alternativesList = new ArrayList<String>();
+        ArrayList<String> alternativesList = new ArrayList<>();
         Node childNode = goalElement.getFirstChild();
 
         while(childNode.getNextSibling() != null) {
@@ -69,7 +95,7 @@ public class AhpTree {
 
     private static AhpNode parseXml(Element root) throws Exception {
         AhpNode ahpRoot = null;
-        ArrayList<AhpNode> ahpList = new ArrayList<AhpNode>();
+        ArrayList<AhpNode> ahpList = new ArrayList<>();
         Node childNode = root.getFirstChild();
 
         while(childNode.getNextSibling() != null){
@@ -93,28 +119,23 @@ public class AhpTree {
     public static Map<String, Double> sortByValue(Map<String, Double> unsortMap) {
 
         List<Map.Entry<String, Double>> list =
-                new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());
+                new LinkedList<>(unsortMap.entrySet());
 
-        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
-            public int compare(Map.Entry<String, Double> o1,
-                               Map.Entry<String, Double> o2) {
-                return -(o1.getValue()).compareTo(o2.getValue());
-            }
-        });
+        list.sort((o1, o2) -> -(o1.getValue()).compareTo(o2.getValue()));
 
-        Map<String, Double> sortedMap = new LinkedHashMap<String, Double>();
+        Map<String, Double> sortedMap = new LinkedHashMap<>();
         for (Map.Entry<String, Double> entry : list) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
         return sortedMap;
     }
 
-    public void printResult() throws Exception {
+    void printResult() throws Exception {
         Matrix resultWeights = this.goal.getWeightsVector(this.method);
         if(resultWeights.getRowDimension() != this.alternatives.size())
             throw new Exception("Number of alternatives not equals weights vector dimension");
 
-        Map<String, Double> result = new HashMap<String, Double>();
+        Map<String, Double> result = new HashMap<>();
         for(int i=0; i < this.alternatives.size(); i++)
             result.put(alternatives.get(i), resultWeights.get(i, 0));
         result = sortByValue(result);

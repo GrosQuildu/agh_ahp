@@ -1,4 +1,4 @@
-package com.gros;
+package com.gros.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -64,7 +64,7 @@ public class MainGraphic extends JPanel implements ActionListener {
         methodButton.setActionCommand(METHOD_COMMAND);
         methodButton.addActionListener(this);
 
-        JButton reqButton = new JButton("Change cons. req.");
+        JButton reqButton = new JButton("Change cons. requirement.");
         reqButton.setActionCommand(REQ_COMMAND);
         reqButton.addActionListener(this);
 
@@ -104,8 +104,8 @@ public class MainGraphic extends JPanel implements ActionListener {
         AhpNodeGraphic alt4 = new AhpNodeGraphic("Alt4", true);
 
         DefaultMutableTreeNode p1, p2;
-        p1 = treePanel.addObject(treePanel.rootNode, criterions);
-        p2 = treePanel.addObject(treePanel.rootNode, alternatives);
+        p1 = treePanel.addObject(treePanel.getRootNode(), criterions);
+        p2 = treePanel.addObject(treePanel.getRootNode(), alternatives);
 
         treePanel.addObject(p1, crit1);
         treePanel.addObject(p1, crit2);
@@ -131,30 +131,38 @@ public class MainGraphic extends JPanel implements ActionListener {
 
         if (ADD_COMMAND.equals(command)) {
             treePanel.addObject(new AhpNodeGraphic("New Node " + newNodeSuffix++));
-        } else if (REMOVE_COMMAND.equals(command)) {
+        }
+        else if (REMOVE_COMMAND.equals(command)) {
             treePanel.removeCurrentNode();
-        } else if (EDIT_COMMAND.equals(command)) {
+        }
+        else if (EDIT_COMMAND.equals(command)) {
             mainFrame.setEnabled(false);
             treePanel.edit(mainFrame);
-        } else if (PARSE_COMMAND.equals(command)) {
+        }
+        else if (PARSE_COMMAND.equals(command)) {
             treePanel.parse();
-        } else if (CLEAR_COMMAND.equals(command)) {
+        }
+        else if (CLEAR_COMMAND.equals(command)) {
             treePanel.clear();
-        } else if (SAVE_COMMAND.equals(command)) {
+        }
+        else if (SAVE_COMMAND.equals(command)) {
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 treePanel.save(file.getAbsolutePath());
             }
-        } else if (LOAD_COMMAND.equals(command)) {
+        }
+        else if (LOAD_COMMAND.equals(command)) {
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 treePanel.load(file.getAbsolutePath());
             }
-        } else if (METHOD_COMMAND.equals(command)) {
+        }
+        else if (METHOD_COMMAND.equals(command)) {
             treePanel.changeMethod();
-        } else if (REQ_COMMAND.equals(command)) {
+        }
+        else if (REQ_COMMAND.equals(command)) {
             treePanel.changeReq();
         }
     }
@@ -164,28 +172,19 @@ public class MainGraphic extends JPanel implements ActionListener {
      * invoked from the event-dispatching thread.
      */
     private static void createAndShowGUI() {
-        // Create and set up the window.
         JFrame frame = new JFrame("AHP");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Create and set up the content pane.
         MainGraphic newContentPane = new MainGraphic(frame);
         newContentPane.setOpaque(true); // content panes must be opaque
         frame.setContentPane(newContentPane);
 
-        // Display the window.
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        // Schedule a job for the event-dispatching thread:
-        // creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
+        javax.swing.SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
 }

@@ -1,4 +1,4 @@
-package com.gros;
+package com.gros.console;
 
 import Jama.Matrix;
 
@@ -7,7 +7,7 @@ import java.util.Random;
 /**
  * Created by gros on 19.03.17.
  */
-public class Utils {
+class Utils {
     static AhpNode randomMatrices(int alternatives, int criterionsDeep, int maxCriterions, int inconsistency) {
         if(alternatives < 2)
             return null;

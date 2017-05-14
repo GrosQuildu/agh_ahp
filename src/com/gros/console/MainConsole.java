@@ -1,4 +1,4 @@
-package com.gros;
+package com.gros.console;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -51,7 +51,10 @@ public class MainConsole {
         System.out.print("Path to XML file: ");
         String path = s.next();
 
-        System.out.print("Method (eigenvector/geometric): ");
+        System.out.print("Method (");
+        for(String method : AhpTree.implementedMethods)
+            System.out.print(method+"/");
+        System.out.println("): ");
         s.nextLine();
         String method = s.nextLine();
         if("".equals(method))
@@ -78,7 +81,7 @@ public class MainConsole {
         int inconsistency = s.nextInt();
 
         AhpNode goal = Utils.randomMatrices(alternatives, criterionsDeep, maxCriterions, inconsistency);
-        ArrayList<String> altList = new ArrayList<String>();
+        ArrayList<String> altList = new ArrayList<>();
         for(int i=0; i < alternatives; i++)
             altList.add("Alt"+i);
         AhpTree tree = new AhpTree(goal, altList, "eigenvector");

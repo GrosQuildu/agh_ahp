@@ -1,11 +1,12 @@
-package com.gros;
+package com.gros.methods;
 
 import Jama.Matrix;
+import com.gros.console.AhpNode;
 
 /**
  * Created by gros on 19.03.17.
  */
-public class EigenvectorMethod implements PriorityVectorMethod {
+public class Eigenvector implements PriorityVector {
     public Matrix getPriorityVector(AhpNode node) {
         Matrix maxEigenvector = node.getMaxEigenvector();
         double sum = 0;

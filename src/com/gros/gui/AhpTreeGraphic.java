@@ -1,24 +1,22 @@
-package com.gros;
+package com.gros.gui;
 
 import Jama.Matrix;
+
+import com.gros.console.AhpNode;
+import com.gros.console.AhpTree;
+import com.gros.methods.Eigenvector;
+import com.gros.methods.PriorityVector;
+
 import org.json.JSONException;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.*;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -27,16 +25,20 @@ import javax.swing.tree.TreeSelectionModel;
  *
  */
 class AhpTreeGraphic extends JPanel {
-    protected DefaultMutableTreeNode rootNode;
-    protected AhpTreeModel treeModel;
-    protected JTree tree;
+    private DefaultMutableTreeNode rootNode;
+    private AhpTreeModel treeModel;
+    private JTree tree;
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
-    public PriorityVectorMethod method;
+    private PriorityVector method;
     double req;
 
-    public AhpTreeGraphic() {
+    AhpTreeGraphic() {
         super(new GridLayout(1, 0));
-        setMethod("eigenvector");
+        try {
+            this.method = AhpTree.createMethod("eigenvector");
+        } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
         this.req = 0.1;
 
         rootNode = new DefaultMutableTreeNode(new AhpNodeGraphic("AHP"));
@@ -52,19 +54,19 @@ class AhpTreeGraphic extends JPanel {
         add(scrollPane);
     }
 
-    public AhpNodeGraphic getCriterionsRoot() {
+    AhpNodeGraphic getCriterionsRoot() {
         DefaultMutableTreeNode criterions = (DefaultMutableTreeNode)rootNode.getChildAt(0);
         return (AhpNodeGraphic)criterions.getUserObject();
     }
 
-    public AhpNodeGraphic getAlternativesRoot() {
+    AhpNodeGraphic getAlternativesRoot() {
         if(rootNode.getChildCount() < 2)
             return null;
         DefaultMutableTreeNode alternatives = (DefaultMutableTreeNode)rootNode.getChildAt(1);
         return (AhpNodeGraphic)alternatives.getUserObject();
     }
 
-    private ArrayList<AhpNode> getLeafs(AhpNode root) {
+    ArrayList<AhpNode> getLeafs(AhpNode root) {
         ArrayList<AhpNode> leafs = new ArrayList<>();
         if(root.list.size() == 0) {
             leafs.add(root);
@@ -76,12 +78,15 @@ class AhpTreeGraphic extends JPanel {
         return leafs;
     }
 
-    public ArrayList<AhpNode> getLeafs() {
-        ArrayList<AhpNodeGraphic> leafs = new ArrayList<>();
+    ArrayList<AhpNode> getLeafs() {
         DefaultMutableTreeNode goal = (DefaultMutableTreeNode)rootNode.getChildAt(0);
         AhpNodeGraphic ahpGoal = (AhpNodeGraphic)goal.getUserObject();
         return getLeafs(ahpGoal);
     }
+
+    DefaultMutableTreeNode getRootNode() { return rootNode; }
+
+    PriorityVector getMethod() { return method; }
 
     private void updateLeafs() {
         int size = getAlternativesRoot().getChilds().size();
@@ -92,7 +97,7 @@ class AhpTreeGraphic extends JPanel {
     }
 
     /** Save XML **/
-    public void save(String path) {
+    void save(String path) {
         String error = null;
         if(!path.endsWith(".xml"))
             path += ".xml";
@@ -103,7 +108,7 @@ class AhpTreeGraphic extends JPanel {
             for(AhpNode alt : alternativeRoot.getChilds()) {
                 alternatives.add(alt.name);
             }
-            AhpNode goal = (AhpNode)getCriterionsRoot();
+            AhpNode goal = getCriterionsRoot();
             AhpTree ahpTree = new AhpTree(goal, alternatives);
             writer.print(ahpTree.toXml());
             writer.close();
@@ -123,7 +128,7 @@ class AhpTreeGraphic extends JPanel {
     }
 
     /** Load XML **/
-    public void load(String path) {
+    void load(String path) {
         try {
             AhpTree parsedTree = AhpTree.fromXml(path, "eigenvalue");
             clear();
@@ -137,7 +142,7 @@ class AhpTreeGraphic extends JPanel {
 
             DefaultMutableTreeNode alternatives = (DefaultMutableTreeNode)rootNode.getChildAt(1);
             for(String alt : parsedTree.alternatives) {
-                addObject(alternatives, new AhpNodeGraphic(alt, true), true, false);
+                addObject(alternatives, new AhpNodeGraphic(alt, true), false);
             }
         } catch(Exception e) {
             e.printStackTrace();
@@ -147,34 +152,26 @@ class AhpTreeGraphic extends JPanel {
 
     private void loadSubtree(DefaultMutableTreeNode parent, AhpNode root) {
         AhpNodeGraphic newNode = new AhpNodeGraphic(root);
-        DefaultMutableTreeNode newNodeTree = addObject(parent, newNode, true, false);
+        DefaultMutableTreeNode newNodeTree = addObject(parent, newNode, false);
         for(AhpNode child : root.list) {
             loadSubtree(newNodeTree, child);
         }
     }
 
     /** Parse **/
-    public void parse() {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                AhpParse parseFrame = new AhpParse(getCriterionsRoot(), method);
-            }
-        });
+    void parse() {
+        javax.swing.SwingUtilities.invokeLater(() -> new AhpParse(getCriterionsRoot(), method));
     }
 
     /** Edit node **/
-    public void edit(JFrame mainFrame) {
+    void edit(JFrame mainFrame) {
         TreePath currentSelection = tree.getSelectionPath();
         if (currentSelection != null) {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelection.getLastPathComponent());
             AhpNodeGraphic ahpCurrentNode = (AhpNodeGraphic)currentNode.getUserObject();
             if(!ahpCurrentNode.isAlternative) {
                 this.getParent().setEnabled(false);
-                javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        AhpEditNodeGraphic editFrame = new AhpEditNodeGraphic(ahpCurrentNode, mainFrame);
-                    }
-                });
+                javax.swing.SwingUtilities.invokeLater(() -> new AhpEditNodeGraphic(ahpCurrentNode, mainFrame));
             }
             else
                 System.out.println("can't edit it");
@@ -184,7 +181,7 @@ class AhpTreeGraphic extends JPanel {
     }
 
     /** Remove all nodes except the root nodes. */
-    public void clear() {
+    void clear() {
         Enumeration childs = rootNode.children();
         while(childs.hasMoreElements()) {
             DefaultMutableTreeNode subrootNode = (DefaultMutableTreeNode)childs.nextElement();
@@ -196,34 +193,35 @@ class AhpTreeGraphic extends JPanel {
     }
 
     /** Change method for computing weights vectors **/
-    public void changeMethod() {
-        String[] choices = { "eigenvector", "geometric mean" };
+    void changeMethod() {
+        String[] choices = AhpTree.implementedMethods.toArray(new String[AhpTree.implementedMethods.size()]);
+        int currentPosition = AhpTree.implementedMethods.indexOf(this.method);
+        if(currentPosition == -1)
+            currentPosition = 0;
         String methodNew = (String) JOptionPane.showInputDialog(null, "Methods:",
                 "How to compute weight vectors", JOptionPane.QUESTION_MESSAGE, null,
                 choices,
-                choices[0]);
-        setMethod(methodNew);
+                choices[currentPosition]);
+        try {
+            this.method = AhpTree.createMethod(methodNew);
+        } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+            this.method = new Eigenvector();
+        }
     }
 
-    private void setMethod(String method) {
-        if("eigenvector".equals(method))
-            this.method = new EigenvectorMethod();
-        else
-            this.method = new GeometricMeanMethod();
-    }
-
-    public void changeReq() {
+    void changeReq() {
         String reqString = (String) JOptionPane.showInputDialog(null, "Requirement",
                 "Minimum consistency requirement:", JOptionPane.QUESTION_MESSAGE, null, null, this.req);
         double tmp = 0.1;
         try {
             tmp = Double.parseDouble(reqString);
-        } catch (Exception w) {}
+        } catch (Exception ignored) {}
         this.req = tmp;
     }
 
     /** Remove the currently selected node. */
-    public void removeCurrentNode() {
+    void removeCurrentNode() {
         TreePath currentSelection = tree.getSelectionPath();
         if (currentSelection != null) {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelection.getLastPathComponent());
@@ -251,8 +249,8 @@ class AhpTreeGraphic extends JPanel {
     }
 
     /** Add child to the currently selected node. */
-    public DefaultMutableTreeNode addObject(Object child) {
-        DefaultMutableTreeNode parentNode = null;
+    DefaultMutableTreeNode addObject(Object child) {
+        DefaultMutableTreeNode parentNode;
         TreePath parentPath = tree.getSelectionPath();
 
         if (parentPath == null) {
@@ -261,16 +259,16 @@ class AhpTreeGraphic extends JPanel {
             parentNode = (DefaultMutableTreeNode) (parentPath.getLastPathComponent());
         }
 
-        return addObject(parentNode, child, true, true);
+        return addObject(parentNode, child, true);
     }
 
-    public DefaultMutableTreeNode addObject(DefaultMutableTreeNode parent,
+    DefaultMutableTreeNode addObject(DefaultMutableTreeNode parent,
                                             Object child) {
-        return addObject(parent, child, true, true);
+        return addObject(parent, child, true);
     }
 
-    public DefaultMutableTreeNode addObject(DefaultMutableTreeNode parent,
-                                            Object child, boolean shouldBeVisible, boolean setMatrix) {
+    DefaultMutableTreeNode addObject(DefaultMutableTreeNode parent,
+                                            Object child, boolean setMatrix) {
         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
 
         if (parent == null)
@@ -306,10 +304,8 @@ class AhpTreeGraphic extends JPanel {
             }
         }
 
-        // Make sure the user can see the lovely new node.
-        if (shouldBeVisible) {
-            tree.scrollPathToVisible(new TreePath(childNode.getPath()));
-        }
+
+        tree.scrollPathToVisible(new TreePath(childNode.getPath()));
         return childNode;
     }
 }

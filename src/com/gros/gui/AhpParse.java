@@ -1,6 +1,9 @@
-package com.gros;
+package com.gros.gui;
 
 import Jama.Matrix;
+import com.gros.console.AhpNode;
+import com.gros.console.AhpTree;
+import com.gros.methods.PriorityVector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,17 +14,17 @@ import java.util.Map;
 /**
  * Created by gros on 10.04.17.
  */
-public class AhpParse extends JPanel {
+class AhpParse extends JPanel {
     private JPanel weightsPanel;
     private AhpNodeGraphic node;
-    PriorityVectorMethod method;
+    private PriorityVector method;
 
-    AhpParse(AhpNodeGraphic node, PriorityVectorMethod method) {
+    AhpParse(AhpNodeGraphic node, PriorityVector method) {
         super(new BorderLayout());
         this.node = node;
         this.method = method;
 
-        weightsPanel = new JPanel(new GridLayout(0,2));
+        this.weightsPanel = new JPanel(new GridLayout(0,2));
         prepareWeights();
 
         JScrollPane scrollWeights = new JScrollPane(weightsPanel);
@@ -51,6 +54,9 @@ public class AhpParse extends JPanel {
             label.setFont(new Font(label.getFont().getName(), Font.BOLD,15));
             value.setFont(new Font(value.getFont().getName(), Font.BOLD,15));
 
+            label.setHorizontalAlignment(JLabel.CENTER);
+            value.setHorizontalAlignment(JLabel.CENTER);
+
             weightsPanel.add(label);
             weightsPanel.add(value);
         }
@@ -66,6 +72,7 @@ public class AhpParse extends JPanel {
         frame.setContentPane(newContentPane);
 
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 }

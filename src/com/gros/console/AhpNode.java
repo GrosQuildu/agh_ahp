@@ -1,12 +1,12 @@
-package com.gros;
+package com.gros.console;
 
 import Jama.Matrix;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
+import com.gros.methods.GeometricMean;
+import com.gros.methods.PriorityVector;
 import org.json.*;
 
 
@@ -14,13 +14,13 @@ import org.json.*;
  * Created by gros on 10.03.17.
  **/
 public class AhpNode {
-    String name;
-    Matrix matrix;
-    ArrayList<AhpNode> list;
+    public String name;
+    public Matrix matrix;
+    public ArrayList<AhpNode> list;
 
-    int maxEigenvalueIndex;
-    double maxEigenvalue;
-    Matrix maxEigenvector;
+    private int maxEigenvalueIndex;
+    private double maxEigenvalue;
+    private Matrix maxEigenvector;
 
     public AhpNode() {
         this.name = "New Node";
@@ -70,26 +70,26 @@ public class AhpNode {
 
 
     /** getters **/
-    Matrix getMatrix() { return this.matrix; }
-    int getMaxEigenvalueIndex() { return this.maxEigenvalueIndex; }
-    double getMaxEigenvalue() { return this.maxEigenvalue; }
-    Matrix getMaxEigenvector() { return this.maxEigenvector; }
+    public Matrix getMatrix() { return this.matrix; }
+    public int getMaxEigenvalueIndex() { return this.maxEigenvalueIndex; }
+    public double getMaxEigenvalue() { return this.maxEigenvalue; }
+    public Matrix getMaxEigenvector() { return this.maxEigenvector; }
 
 
     /*** change hierarchy tree ***/
-    void addChild(AhpNode node) {
+    public void addChild(AhpNode node) {
         this.list.add(node);
     }
-    void addChild(ArrayList<AhpNode> list) {
+    public void addChild(ArrayList<AhpNode> list) {
         this.list.addAll(list);
     }
 
-    void removeChild(AhpNode node) { this.list.remove(node); }
-    void clear() { this.list.clear(); }
+    public void removeChild(AhpNode node) { this.list.remove(node); }
+    public void clear() { this.list.clear(); }
     
 
     /** Compute priority/weight vectors **/
-    Matrix getWeightsVector(Matrix matrix, PriorityVectorMethod method) {
+    public Matrix getWeightsVector(Matrix matrix, PriorityVector method) {
         Matrix weights = method.getPriorityVector(this);
         if(this.list.size() == 0)
             return weights;
@@ -102,16 +102,16 @@ public class AhpNode {
         }
         return finallWeights;
     }
-    Matrix getWeightsVector(PriorityVectorMethod method) {return getWeightsVector(this.matrix, method);}
+    public Matrix getWeightsVector(PriorityVector method) {return getWeightsVector(this.matrix, method);}
 
 
     /** Consistency indexes **/
-    double consistencyIndex() {return consistencyIndex(this.matrix, this.maxEigenvalue);}
-    double consistencyRatio() {return consistencyRatio(this.matrix, this.maxEigenvalue);}
-    double consistencyIndexOfDeterminants() {return consistencyIndexOfDeterminants(this.matrix);}
-    double consistencyGeometricIndex() {return consistencyGeometricIndex(this.matrix, new GeometricMeanMethod().getPriorityVector(this));}
-    double consistencyHarmonicIndex() {return consistencyHarmonicIndex(this.matrix);}
-    double consistencyAmbiguityIndex() {return consistencyAmbiguityIndex(this.matrix);}
+    public double consistencyIndex() {return consistencyIndex(this.matrix, this.maxEigenvalue);}
+    public double consistencyRatio() {return consistencyRatio(this.matrix, this.maxEigenvalue);}
+    public double consistencyIndexOfDeterminants() {return consistencyIndexOfDeterminants(this.matrix);}
+    public double consistencyGeometricIndex() {return consistencyGeometricIndex(this.matrix, new GeometricMean().getPriorityVector(this));}
+    public double consistencyHarmonicIndex() {return consistencyHarmonicIndex(this.matrix);}
+    public double consistencyAmbiguityIndex() {return consistencyAmbiguityIndex(this.matrix);}
 
 
     /** convert to printable **/

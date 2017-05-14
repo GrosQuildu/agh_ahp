@@ -1,4 +1,4 @@
-package com.gros;
+package com.gros.gui;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -11,10 +11,6 @@ import javax.swing.tree.TreePath;
 public class AhpTreeModel extends DefaultTreeModel {
     AhpTreeModel(TreeNode root) {
         super(root);
-    }
-
-    AhpTreeModel(TreeNode root, boolean asksAllowsChildren) {
-        super(root, asksAllowsChildren);
     }
 
     @Override
