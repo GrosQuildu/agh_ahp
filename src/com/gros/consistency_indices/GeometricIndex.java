@@ -2,7 +2,6 @@ package com.gros.consistency_indices;
 
 import Jama.Matrix;
 import com.gros.console.AhpNode;
-import com.gros.methods.Eigenvector;
 import com.gros.methods.PriorityVector;
 
 /**

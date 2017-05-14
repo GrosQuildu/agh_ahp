@@ -1,7 +1,6 @@
 package com.gros.consistency_indices;
 
 import Jama.Matrix;
-
 import java.util.Random;
 
 /**

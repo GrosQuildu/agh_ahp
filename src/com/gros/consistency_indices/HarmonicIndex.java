@@ -1,8 +1,6 @@
 package com.gros.consistency_indices;
 
 import Jama.Matrix;
-import com.gros.console.AhpNode;
-
 import java.util.ArrayList;
 
 /**

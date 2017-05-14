@@ -1,7 +1,6 @@
 package com.gros.consistency_indices;
 
 import Jama.Matrix;
-import com.gros.console.AhpNode;
 
 /**
  * Created by gros on 14.05.17.
